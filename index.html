@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Naseer Ahmed · senior Flutter dev</title>
+  <title>Naseer Ahmed · Senior Flutter dev</title>
   <!-- Fonts & Icons (Inter + Devicon + Font Awesome) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,34 +34,16 @@
       min-height: 100vh;
     }
 
-    /* ---------- floating logos background (fresh & techy) ---------- */
-    .floating-logos {
+    /* --- 3D canvas background (tech logos) --- */
+    #three-canvas {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .floating-logos i,
-    .floating-logos .fab,
-    .floating-logos .devicon {
-      position: absolute;
-      color: rgba(255, 255, 255, 0.06);
-      font-size: clamp(2rem, 8vw, 6rem);
-      user-select: none;
-      animation: floatLogo 30s infinite alternate ease-in-out;
-      transform-origin: center;
-    }
-
-    /* different sizes, positions, delays */
-    @keyframes floatLogo {
-      0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.04; }
-      50% { transform: translate(20px, -30px) rotate(8deg) scale(1.1); opacity: 0.1; }
-      100% { transform: translate(-20px, 40px) rotate(-5deg) scale(0.9); opacity: 0.06; }
+      width: 100vw;
+      height: 100vh;
+      z-index: -3;
+      display: block;
+      pointer-events: none; /* allow clicking through */
     }
 
     /* custom cursor */
@@ -474,24 +456,9 @@
 </head>
 <body>
   <div class="cursor" id="cursor"></div>
-
-  <!-- floating tech logos background (fresh & flutter oriented) -->
-  <div class="floating-logos">
-    <i class="devicon-flutter-plain" style="top: 10%; left: 2%; font-size: 7rem; animation-duration: 28s;"></i>
-    <i class="devicon-dart-plain" style="top: 70%; left: 85%; font-size: 6rem; animation-duration: 32s; animation-delay: -2s;"></i>
-    <i class="devicon-firebase-plain" style="top: 40%; left: 15%; font-size: 5rem; animation-duration: 26s;"></i>
-    <i class="devicon-kotlin-plain" style="top: 80%; left: 30%; font-size: 5.5rem; animation-duration: 34s; animation-delay: -5s;"></i>
-    <i class="devicon-swift-plain" style="top: 20%; left: 70%; font-size: 6rem; animation-duration: 30s;"></i>
-    <i class="devicon-nodejs-plain" style="top: 55%; left: 50%; font-size: 6rem; animation-duration: 38s;"></i>
-    <i class="devicon-mongodb-plain" style="top: 85%; left: 10%; font-size: 5rem; animation-duration: 24s;"></i>
-    <i class="devicon-git-plain" style="top: 15%; left: 40%; font-size: 5rem; animation-duration: 36s;"></i>
-    <i class="devicon-figma-plain" style="top: 60%; left: 75%; font-size: 5rem; animation-duration: 30s;"></i>
-    <i class="fab fa-google-play" style="top: 30%; left: 90%; font-size: 5rem; animation-duration: 35s;"></i>
-    <i class="devicon-android-plain" style="top: 45%; left: 5%; font-size: 6rem; animation-duration: 28s;"></i>
-    <i class="devicon-bash-plain" style="top: 72%; left: 60%; font-size: 4rem; animation-duration: 40s;"></i>
-    <i class="devicon-flutter-plain" style="top: 8%; left: 80%; font-size: 5rem; animation-duration: 32s;"></i>
-    <i class="devicon-dart-plain" style="top: 92%; left: 45%; font-size: 7rem; animation-duration: 26s;"></i>
-  </div>
+  
+  <!-- 3D canvas for tech logos background (floating sprites) -->
+  <canvas id="three-canvas"></canvas>
 
   <main>
     <!-- HERO SECTION -->
@@ -694,10 +661,189 @@
       </div>
       <p style="font-size: 1.4rem; margin-top: 30px; background: linear-gradient(135deg,#7dd3fc,#c4b5fd); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">enginer7299@gmail.com</p>
       <footer>
-        <p>⭐️ from Naseer Ahmed · #challengeAccepted · fresh & fast</p>
+        <p>⭐️ from Naseer Ahmed · #challengeAccepted · 3D tech background</p>
       </footer>
     </section>
   </main>
+
+  <!-- Three.js library (import map) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    // ----- 3D BACKGROUND WITH TECH LOGO SPRITES -----
+    import * as THREE from 'three';
+
+    const canvas = document.getElementById('three-canvas');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x030614); // deep dark blue
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 18;
+    camera.position.y = 2;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // --- lights (soft) ---
+    const ambient = new THREE.AmbientLight(0x404060);
+    scene.add(ambient);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    dirLight.position.set(1, 2, 5);
+    scene.add(dirLight);
+    
+    // --- helper to create sprite texture from tech name ---
+    function createTechSprite(techName, bgColor) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+
+      // background with rounded rect
+      ctx.fillStyle = bgColor;
+      const radius = 30;
+      ctx.beginPath();
+      ctx.moveTo(radius, 0);
+      ctx.lineTo(canvas.width - radius, 0);
+      ctx.quadraticCurveTo(canvas.width, 0, canvas.width, radius);
+      ctx.lineTo(canvas.width, canvas.height - radius);
+      ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - radius, canvas.height);
+      ctx.lineTo(radius, canvas.height);
+      ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - radius);
+      ctx.lineTo(0, radius);
+      ctx.quadraticCurveTo(0, 0, radius, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      // border glow
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // text
+      ctx.font = 'bold 48px "Inter", "Segoe UI", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 15;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(techName, canvas.width/2, canvas.height/2);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false });
+      const sprite = new THREE.Sprite(material);
+      return sprite;
+    }
+
+    // list of tech names + colors (fresh palette)
+    const techs = [
+      { name: 'Flutter', color: '#02569B' },
+      { name: 'Dart', color: '#0175C2' },
+      { name: 'Firebase', color: '#FFCA28' },
+      { name: 'Kotlin', color: '#7F52FF' },
+      { name: 'Swift', color: '#FA7343' },
+      { name: 'Node.js', color: '#339933' },
+      { name: 'MongoDB', color: '#47A248' },
+      { name: 'BLoC', color: '#222222' },
+      { name: 'GetX', color: '#8E24AA' },
+      { name: 'Figma', color: '#F24E1E' },
+      { name: 'Git', color: '#F05032' },
+      { name: 'Android', color: '#3DDC84' },
+    ];
+
+    const sprites = [];
+    const range = 35; // spread
+
+    for (let i = 0; i < 45; i++) {
+      // pick random tech
+      const t = techs[Math.floor(Math.random() * techs.length)];
+      const sprite = createTechSprite(t.name, t.color);
+      
+      // random position within a sphere
+      const r = 10 + Math.random() * 15; // distance
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1); // spherical distribution
+      
+      sprite.position.x = r * Math.sin(phi) * Math.cos(theta);
+      sprite.position.y = r * Math.sin(phi) * Math.sin(theta) * 0.6; // flatten a bit
+      sprite.position.z = r * Math.cos(phi) - 10; // push back
+      
+      // random scale
+      const scale = 1.5 + Math.random() * 2;
+      sprite.scale.set(scale * 1.2, scale * 0.6, 1); // width/ratio for text
+
+      // store animation parameters
+      sprite.userData = {
+        speed: 0.001 + Math.random() * 0.003,
+        offset: Math.random() * 100,
+        originalPos: sprite.position.clone(),
+        rotSpeedY: (Math.random() - 0.5) * 0.005,
+        rotSpeedX: (Math.random() - 0.5) * 0.003
+      };
+      
+      scene.add(sprite);
+      sprites.push(sprite);
+    }
+
+    // also add tiny floating particles for depth
+    const particleGeo = new THREE.BufferGeometry();
+    const particleCount = 600;
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i += 3) {
+      positions[i] = (Math.random() - 0.5) * 70;
+      positions[i+1] = (Math.random() - 0.5) * 50;
+      positions[i+2] = (Math.random() - 0.5) * 60 - 20;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const particleMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.15, transparent: true, opacity: 0.4 });
+    const particles = new THREE.Points(particleGeo, particleMat);
+    scene.add(particles);
+
+    // subtle fog
+    scene.fog = new THREE.FogExp2(0x030614, 0.025);
+
+    // animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // animate sprites: gentle drift and rotation
+      const time = performance.now() / 1000;
+      sprites.forEach(sprite => {
+        // floating motion
+        sprite.position.y += Math.sin(time * sprite.userData.speed * 2 + sprite.userData.offset) * 0.003;
+        sprite.position.x += Math.cos(time * sprite.userData.speed * 1.3 + sprite.userData.offset) * 0.002;
+        
+        // slight rotation (sprites face camera always, but we can rotate material? not needed)
+        // instead rotate the sprite around its axis? sprite.rotation is in radians around z?
+        // for variety, we rotate the texture? not implemented
+      });
+
+      // rotate particles very slowly
+      particles.rotation.y += 0.0001;
+
+      // subtle camera movement
+      camera.position.x = Math.sin(time * 0.1) * 3;
+      camera.position.y = 2 + Math.sin(time * 0.2) * 1;
+      camera.lookAt(0, 0, -5);
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // resize handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 
   <script>
     // Init GSAP ScrollTrigger
